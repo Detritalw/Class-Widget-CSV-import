@@ -58,7 +58,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     wcex.hIconSm = LoadIcon(wcex.hInstance, IDI_APPLICATION);
 
     RegisterClassExW(&wcex);
-    hWnd = CreateWindowExW(0, L"SampleWindowClass", L"Updata", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
+    // 设置窗口的初始大小
+    hWnd = CreateWindowExW(0, L"SampleWindowClass", L"Updata", WS_OVERLAPPEDWINDOW,
+                           CW_USEDEFAULT, 0, 550, 300, NULL, NULL, hInstance, NULL);
 
     if (!hWnd) {
         return FALSE;
@@ -84,17 +86,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
             HFONT hFont = CreateSmoothFont();
             hEdit = CreateWindowW(L"EDIT", L"选择 Class Widgets 文件夹",
                                   WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
-                                  10, 10, 300, 25, hWnd, NULL, hInst, NULL);
+                                  10, 10, 390, 25, hWnd, NULL, hInst, NULL);
             if (hEdit) {
                 SendMessage(hEdit, WM_SETFONT, (WPARAM)hFont, TRUE);
             }
 
-            CreateButton(hWnd, hInst, hFont, L"选择文件夹", 320, 10, 100, 25, 1);
+            CreateButton(hWnd, hInst, hFont, L"选择文件夹", 410, 10, 100, 25, 1);
             CreateButton(hWnd, hInst, hFont, L"确认并从.csv文件(第一列为单个时间段的时间长度)转换到.json课表文件", 10, 40, 500, 25, 2);
             CreateButton(hWnd, hInst, hFont, L"确认并从.csv文件(第一列为单个时间段的起始时间)转换到.json课表文件", 10, 70, 500, 25, 3);
             CreateButton(hWnd, hInst, hFont, L"确认并从.json课表文件转换到.csv文件", 10, 100, 500, 25, 4);
-            CreateButton(hWnd, hInst, hFont, L"需要帮助？", 200, 130, 100, 25, 5);
-
+            CreateButton(hWnd, hInst, hFont, L"需要帮助？", 100, 130, 100, 25, 5);
+            CreateButton(hWnd, hInst, hFont, L"退出程序", 200, 130, 100, 25, 6);
             break;
         }
         case WM_COMMAND:
@@ -113,8 +115,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
                     CoTaskMemFree(pidl);
                 }
                 delete[] bi.pszDisplayName;
-                scancsv(hWnd);
             }
+            if (LOWORD(wParam) == 2){
+                scancsv(hWnd);
+                
+            }
+            if (LOWORD(wParam) == 3){
+                scancsv(hWnd);
+                
+            }
+            if (LOWORD(wParam) == 4){
+                scancsv(hWnd);
+                
+            }
+            if (LOWORD(wParam) == 5) MessageBoxW(hWnd, L"其实我也不知道帮助是什么", L"谢谢", MB_OK | MB_ICONINFORMATION);
+            if (LOWORD(wParam) == 6) exit(0);
             break;
 
         case WM_DESTROY:
