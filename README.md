@@ -1,0 +1,5 @@
+# Class Widgets CSV import
+让我们用.csv表格编辑 Class Widgets 课表！
+
+## 相关项目
+[Class Widgets](https://github.com/Class-Widgets/Class-Widgets)
