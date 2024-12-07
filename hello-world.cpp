@@ -1,21 +1,57 @@
-//xixi
+#include <windows.h>
 
-//注释是双斜杠
+LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
-/*或者可以这样，也是注释*/
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+    WNDCLASSEXW wcex;
+    HWND hWnd;
+    MSG msg;
 
-//第一步用万能头文件
-#include<bits/stdc++.h>
-//谢谢
-//如果要开发Windows窗口软件，需要再加
-#include<windows.h>
+    wcex.cbSize = sizeof(WNDCLASSEXW);
+    wcex.style = CS_HREDRAW | CS_VREDRAW;
+    wcex.lpfnWndProc = WndProc;
+    wcex.cbClsExtra = 0;
+    wcex.cbWndExtra = 0;
+    wcex.hInstance = hInstance;
+    wcex.hIcon = LoadIcon(hInstance, IDI_APPLICATION);
+    wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
+    wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+    wcex.lpszMenuName = NULL;
+    wcex.lpszClassName = L"TestWindowClass";
+    wcex.hIconSm = LoadIcon(wcex.hInstance, IDI_APPLICATION);
 
-//然后建议命名空间
-using namespace std;
+    if (!RegisterClassExW(&wcex)) {
+        MessageBoxW(NULL, L"窗口类注册失败", L"错误", MB_OK | MB_ICONERROR);
+        return 0;
+    }
 
-//谢谢
-int main(){
-    printf("hello world");
-    Sleep(100000);
+    const wchar_t* windowTitle = L"csv 转 ClassWidgets json 课表转换器";
+    hWnd = CreateWindowExW(0, L"TestWindowClass", windowTitle, WS_OVERLAPPEDWINDOW,
+                           CW_USEDEFAULT, 0, 550, 300, NULL, NULL, hInstance, NULL);
+
+    if (!hWnd) {
+        MessageBoxW(NULL, L"窗口创建失败", L"错误", MB_OK | MB_ICONERROR);
+        return 0;
+    }
+
+    ShowWindow(hWnd, nCmdShow);
+    UpdateWindow(hWnd);
+
+    while (GetMessage(&msg, NULL, 0, 0)) {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+
+    return (int)msg.wParam;
+}
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
+    switch (message) {
+        case WM_DESTROY:
+            PostQuitMessage(0);
+            break;
+        default:
+            return DefWindowProc(hWnd, message, wParam, lParam);
+    }
     return 0;
 }

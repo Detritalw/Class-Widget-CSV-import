@@ -56,73 +56,80 @@ wstring scancsv(HWND hWnd, HWND hEdit) {
 
 void NumCsv2Json(HWND hWnd, HWND hEdit) {
     wstring filePath = GetEditText(hEdit);
-    int timekc = 40;  // 保留这一行
-    string kindkc, text;
-    bool kc = false;  // 移动到这里
-    scancsv(hWnd, hEdit);
+
+    if (filePath.empty()) {
+        MessageBoxW(hWnd, L"文本框为空", L"请输入文件路径", MB_OK | MB_ICONWARNING);
+        return;
+    }
+
+    if (!PathFileExistsW(filePath.c_str())) {
+        MessageBoxW(hWnd, L"文件不存在", L"请检查文件路径", MB_OK | MB_ICONSTOP);
+        return;
+    }
+
+    if (!IsCsvFile(filePath)) {
+        MessageBoxW(hWnd, L"文件不是.csv格式", L"请选择.csv文件", MB_OK | MB_ICONSTOP);
+        return;
+    }
 
     // 构建输出文件路径
     wstring outputFilePath = filePath.substr(0, filePath.find_last_of(L"\\/") + 1) + L"课表.json";
 
-    // 重定向标准输入到 CSV 文件
-    FILE *inputFile = _wfreopen(filePath.c_str(), L"r", stdin);
-    if (inputFile == NULL) {
+    wifstream inputFile(filePath.c_str());
+    if (!inputFile.is_open()) {
         MessageBoxW(hWnd, L"无法打开输入文件", L"请检查文件路径", MB_OK | MB_ICONERROR);
         return;
     }
 
-    // 重定向标准输出到 JSON 文件
-    FILE *outputFile = _wfreopen(outputFilePath.c_str(), L"w", stdout);
-    if (outputFile == NULL) {
+    wofstream outputFile(outputFilePath.c_str());
+    if (!outputFile.is_open()) {
         MessageBoxW(hWnd, L"无法创建输出文件", L"请检查文件路径", MB_OK | MB_ICONERROR);
-        fclose(inputFile);
         return;
     }
 
-    // 这里可以进行 CSV 到 JSON 的转换操作
-    // 例如：
     int time = 0;
-    // int timekc = 0;  // 删除这一行
-    // bool kc = false;  // 移除这一行
+    int itime = 0;  // 引入行号变量
 
-    while (true) {
-        // 读取时间
-        if (scanf("%d,", &time) != 1) {
-            printf("读取时间失败\n");
-            break;
+    outputFile << L"{\n    \"timeline\": {\n        \"default\": {\n";
+
+    wstring line;
+    while (getline(inputFile, line)) {
+        ++itime;  // 行号递增
+
+        wistringstream iss(line);
+        if (!(iss >> time)) {
+            MessageBoxW(hWnd, L"无法读取时间", L"请检查文件内容", MB_OK | MB_ICONERROR);
+            continue;
         }
 
         if (time == 0) {
             break;  // 如果读到的数字是 0，结束循环
         }
 
-        // 读取时间kc
-        if (scanf("%d,", &timekc) != 1) {
-            printf("读取时间kc失败\n");
-            break;
-        }
-
-        // 读取两个字的文本
-        if (scanf("%2s,", &text) != 1) {
-            printf("读取文本失败\n");
-            break;
+        wstring text;
+        if (!(iss >> text)) {
+            MessageBoxW(hWnd, L"无法读取文本", L"请检查文件内容", MB_OK | MB_ICONERROR);
+            continue;
         }
 
         // 根据文本设置 kc 的值
-        if (strcmp(text.c_str(), "课程") == 0) kc = true;
-        else kc = false;
+        bool kc = (text == L"课程");
 
         // 处理读取的数据
-        printf("time: %d, timekc: %d, kc: %s\n", time, timekc, kc ? "true" : "false");
+        if (kc) {
+            if (itime != 1) outputFile << L",\n    ";
+            outputFile << L"\"a0" << itime << L"\": \"" << time << L"\"";
+        } else {
+            if (itime != 1) outputFile << L",\n    ";
+            outputFile << L"\"f" << itime << L"\": \"" << time << L"\"";
+        }
     }
 
-    // 关闭文件，恢复标准输入和输出
-    fclose(inputFile);
-    fclose(outputFile);
-    freopen("CONIN$", "r", stdin);  // 恢复标准输入到控制台
-    freopen("CONOUT$", "w", stdout);  // 恢复标准输出到控制台
+    outputFile << L"\n        }\n    }\n}";
 
-    return;
+    // 关闭文件
+    inputFile.close();
+    outputFile.close();
 }
 
 HFONT CreateSmoothFont(int height = 20, int weight = FW_NORMAL, const wchar_t* faceName = L"Segoe UI") {
@@ -163,18 +170,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     wcex.lpszClassName = L"SampleWindowClass";
     wcex.hIconSm = LoadIcon(wcex.hInstance, IDI_APPLICATION);
 
-    RegisterClassExW(&wcex);
+    if (!RegisterClassExW(&wcex)) {
+        MessageBoxW(NULL, L"窗口类注册失败", L"错误", MB_OK | MB_ICONERROR);
+        return 0;
+    }
+
     // 设置窗口的初始大小
-    hWnd = CreateWindowExW(0, L"SampleWindowClass", L"csv文件 转 ClassWidgets json 课表文件", WS_OVERLAPPEDWINDOW,
+    const wchar_t* windowTitle = L"csv 转 ClassWidgets json 课表转换器";
+    hWnd = CreateWindowExW(0, L"SampleWindowClass", windowTitle, WS_OVERLAPPEDWINDOW,
                            CW_USEDEFAULT, 0, 550, 300, NULL, NULL, hInstance, NULL);
 
     if (!hWnd) {
-        return FALSE;
+        MessageBoxW(NULL, L"窗口创建失败", L"错误", MB_OK | MB_ICONERROR);
+        return 0;
     }
 
+    // 显示窗口
     ShowWindow(hWnd, nCmdShow);
     UpdateWindow(hWnd);
 
+    // 消息循环
     while (GetMessage(&msg, NULL, 0, 0)) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
@@ -182,7 +197,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     return (int)msg.wParam;
 }
-
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
     static HWND hEdit;
     static HINSTANCE hInst;
@@ -190,7 +204,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
     switch (message) {
         case WM_CREATE: {
             HFONT hFont = CreateSmoothFont();
-            hEdit = CreateWindowW(L"EDIT", L"选择 Class Widgets 文件夹",
+            hEdit = CreateWindowW(L"EDIT", L"选择 CSV文件 或 Class Widgets json课表",
                                   WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
                                   10, 10, 390, 25, hWnd, NULL, hInst, NULL);
             if (hEdit) {
@@ -227,13 +241,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
             }
             // 其他命令处理
             if (LOWORD(wParam) == 2) {
-                scancsv(hWnd, hEdit);
+                NumCsv2Json(hWnd, hEdit);
             }
             if (LOWORD(wParam) == 3) {
-                scancsv(hWnd, hEdit);
+                NumCsv2Json(hWnd, hEdit);
             }
             if (LOWORD(wParam) == 4) {
-                scancsv(hWnd, hEdit);
+                NumCsv2Json(hWnd, hEdit);
             }
             if (LOWORD(wParam) == 5) MessageBoxW(hWnd, L"其实我也不知道帮助是什么", L"谢谢", MB_OK | MB_ICONINFORMATION);
             if (LOWORD(wParam) == 6) exit(0);
