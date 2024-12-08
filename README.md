@@ -1,6 +1,9 @@
 # Class Widgets CSV import
 让我们用.csv表格编辑 Class Widgets 课表！将.csv文件转换为 Class Widgets Json 课表
 
+## DEV
+若您想要看到最新版本，Github上的更新并不及时，请前往 [PCFS 存储站](http://123.129.241.101:30390/%E5%85%B1%E4%BA%AB/Class-Widget-CSV-import) 查看最新存储库和实时出版的测试版本
+
 ## 特点
 软件无依赖，单文件即可运行
 
