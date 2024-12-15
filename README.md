@@ -10,8 +10,7 @@
 ## 功能与计划
 - [x] 时间线转化
 - [x] 课程表转化
-- [ ] 时间分区
-- [ ] ...
+- [x] 时间分区
 
 ## 需要注意
 出现文件中文格式问题，写入时间段名字时请不要使用中文，否则转换出来的文件若用utf-8格式打开是乱码，只能使用**Simplified Chinese (GBK)** gbk格式，但 [Class Widgets](https://github.com/Class-Widgets/Class-Widgets) 识别utf-8格式。
