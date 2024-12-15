@@ -97,6 +97,60 @@ void NumCsv2Json(HWND hWnd, HWND hEdit) {
 
     wstring line;
     // 逐行读取输入文件
+    getline(inputFile, line); // 读取第一行，获取节点数量
+    int nodeCount = stoi(line);
+
+    wstring partJson = L"    \"part\": {\n";
+    wstring partNameJson = L"    \"part_name\": {\n";
+
+    for (int i = 0; i < nodeCount; ++i) {
+        getline(inputFile, line);
+        wistringstream iss(line);
+        wstring token;
+        vector<wstring> tokens;
+
+        // 使用逗号作为分隔符
+        while (getline(iss, token, L',')) {
+            tokens.push_back(token);
+        }
+
+        // 检查是否有足够的列
+        if (tokens.size() < 3) {
+            // 显示消息框，提示发现错误，并提供选项：中止、继续和取消
+            int result = MessageBoxW(hWnd, (L"发现格式错误的行: " + to_wstring(i + 1) + L"\n请选择操作").c_str(), L"格式错误", MB_ABORTRETRYIGNORE | MB_ICONEXCLAMATION);
+            if (result == IDABORT) {
+                // 中止操作
+                MessageBoxW(hWnd, L"操作已中止", L"中止", MB_OK | MB_ICONINFORMATION);
+                return;
+            } else if (result == IDRETRY) {
+                // 继续处理下一行
+                continue;
+            } else if (result == IDIGNORE) {
+                // 取消操作
+                MessageBoxW(hWnd, L"操作已取消", L"取消", MB_OK | MB_ICONINFORMATION);
+                return;
+            }
+        }
+
+        // 处理节点名称、小时和分钟
+        wstring nodeName = tokens[0];
+        int hour = stoi(tokens[1]);
+        int minute = stoi(tokens[2]);
+
+        // 构建 part 和 part_name 的 JSON 字符串
+        partJson += L"        \"" + to_wstring(i) + L"\": [" + to_wstring(hour) + L", " + to_wstring(minute) + L"]";
+        partNameJson += L"        \"" + to_wstring(i) + L"\": \"" + nodeName + L"\"";
+
+        if (i < nodeCount - 1) {
+            partJson += L",\n";
+            partNameJson += L",\n";
+        }
+    }
+
+    partJson += L"\n    },\n";
+    partNameJson += L"\n    }\n";
+
+    // 处理剩余的 schedule 数据
     while (getline(inputFile, line)) {
         wistringstream iss(line);
         wstring token;
@@ -155,13 +209,13 @@ void NumCsv2Json(HWND hWnd, HWND hEdit) {
 
     // 完成 timeline 和 schedule 的 JSON 字符串
     timelineJson += L"\n        }\n    },\n";
-    scheduleJson += L"    }\n";  // 移除最后一个换行符
+    scheduleJson += L"\n    },";  // 移除最后一个换行符
 
     // 在倒数第二个 } 符号之前添加换行符
     scheduleJson += L"\n";
 
     // 构建输出字符串
-    wstring outputJson = L"{\n" + timelineJson + scheduleJson + L"}";
+    wstring outputJson = L"{\n" + timelineJson + scheduleJson + partJson + partNameJson + L"}";
 
     // 写入输出文件
     outputFile << outputJson;
