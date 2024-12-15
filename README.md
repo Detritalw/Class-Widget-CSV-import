@@ -14,23 +14,13 @@
 - [ ] ...
 
 ## 需要注意
-由于时间分区功能未完成，所以导入到 [Class Widgets](https://github.com/Class-Widgets/Class-Widgets) 中会报错，如果想要导入成功，可以尝试 **在倒数第二个`}`后、最后一个`}`中间** 加入以下内容
-```
-"part": {
-        "0": [
-            时,
-            分
-        ],
-        "1": [
-            时,
-            分
-        ]
-    },
-    "part_name": {
-        "0": "上午",
-        "1": "下午"
-    }
-```
+出现文件中文格式问题，写入时间段名字时请不要使用中文，否则转换出来的文件若用utf-8格式打开是乱码，只能使用**Simplified Chinese (GBK)** gbk格式，但 [Class Widgets](https://github.com/Class-Widgets/Class-Widgets) 识别utf-8格式。
+> [Class Widgets](https://github.com/Class-Widgets/Class-Widgets) 提示：
+> | ERROR    | list:import_schedule:227 - 加载数据时出错: 'utf-8' codec can't decode byte 0xc9 in position 1307: invalid continuation byte
+
+解决方法：
+写入时间段名字时请不要使用中文，使用英文即可，例如AM，PM
+
 
 ## 环境
 ||测试环境|建议|最低限度|
