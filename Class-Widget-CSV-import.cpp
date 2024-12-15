@@ -32,28 +32,24 @@ bool IsCsvFile(const wstring& filePath) {
            _wcsicmp(PathFindExtensionW(filePath.c_str()), L".csv") == 0;
 }
 
-// 扫描 CSV 文件
-wstring scancsv(HWND hWnd, HWND hEdit) {
-    wstring filePath = GetEditText(hEdit);
+// 创建平滑字体
+HFONT CreateSmoothFont(int height = 20, int weight = FW_NORMAL, const wchar_t* faceName = L"Segoe UI") {
+    LOGFONTW lf = {0};  // 使用 LOGFONTW 而不是 LOGFONT
+    lf.lfHeight = height;
+    lf.lfWeight = weight;
+    lf.lfQuality = CLEARTYPE_QUALITY;
+    wcscpy_s(lf.lfFaceName, LF_FACESIZE, faceName);  // 使用 wcscpy_s
 
-    if (filePath.empty()) {
-        MessageBoxW(hWnd, L"文本框为空", L"请输入文件路径", MB_OK | MB_ICONWARNING);
-        return L"";
+    HFONT hFont = CreateFontIndirectW(&lf);
+
+    if (hFont == NULL) {
+        return NULL;
     }
 
-    if (!PathFileExistsW(filePath.c_str())) {
-        MessageBoxW(hWnd, L"文件不存在", L"请检查文件路径", MB_OK | MB_ICONSTOP);
-        return L"";
-    }
-
-    if (!IsCsvFile(filePath)) {
-        MessageBoxW(hWnd, L"文件不是.csv格式", L"请选择.csv文件", MB_OK | MB_ICONSTOP);
-        return L"";
-    }
-
-    return filePath;
+    return hFont;
 }
 
+// 扫描 CSV 文件
 void NumCsv2Json(HWND hWnd, HWND hEdit) {
     wstring filePath = GetEditText(hEdit);
 
@@ -87,65 +83,67 @@ void NumCsv2Json(HWND hWnd, HWND hEdit) {
         return;
     }
 
-    int time = 0;
     int itime = 0;  // 引入行号变量
-
-    outputFile << L"{\n    \"timeline\": {\n        \"default\": {\n";
-
     wstring line;
+    wstring timelineJson = L"{\n    \"timeline\": {\n        \"default\": {\n";
+    wstring scheduleJson = L"    \"schedule\": {\n";  // 声明并初始化 scheduleJson
+    bool firstTimelineEntry = true;
+    bool firstScheduleEntry = true;
+
     while (getline(inputFile, line)) {
-        ++itime;  // 行号递增
-
         wistringstream iss(line);
-        if (!(iss >> time)) {
-            MessageBoxW(hWnd, L"无法读取时间", L"请检查文件内容", MB_OK | MB_ICONERROR);
-            continue;
+        int time;
+        wstring dummy; // 用于跳过前两列
+        if (!(iss >> time >> dummy)) {
+            continue;  // 跳过不符合格式的行
         }
 
-        if (time == 0) {
-            break;  // 如果读到的数字是 0，结束循环
+        // 处理时间戳
+        if (!firstTimelineEntry) timelineJson += L",\n";  // 如果不是第一行，则需要添加逗号
+        else firstTimelineEntry = false;
+        wstring key = (itime % 2 == 0) ? L"f" : L"a";
+        timelineJson += L"            \"" + key + L"0" + to_wstring(itime + 1) + L"\": \"" + to_wstring(time) + L"\"";
+
+        // 添加课程名称到 schedule
+        wstring courseName;
+        vector<wstring> scheduleItems;
+        for (int i = 0; i < 7; ++i) { // 从第3列开始读取7个元素
+            if (!(iss >> quoted(courseName))) { // 使用 quoted 以处理可能的引号
+                break; // 如果没有更多的列，跳出循环
+            }
+            scheduleItems.push_back(courseName);
         }
 
-        wstring text;
-        if (!(iss >> text)) {
-            MessageBoxW(hWnd, L"无法读取文本", L"请检查文件内容", MB_OK | MB_ICONERROR);
-            continue;
+        // 构建当前时间段的 schedule 部分
+        if (!scheduleItems.empty()) {
+            if (!firstScheduleEntry) scheduleJson += L",\n";  // 如果不是第一行，则需要添加逗号
+            else firstScheduleEntry = false;
+            scheduleJson += L"        \"" + to_wstring(itime) + L"\": [\n";
+            for (size_t i = 0; i < scheduleItems.size(); ++i) {
+                if (i > 0) scheduleJson += L", ";
+                scheduleJson += L"\"" + scheduleItems[i] + L"\"";
+            }
+            scheduleJson += L"\n        ]";
         }
 
-        // 根据文本设置 kc 的值
-        bool kc = (text == L"课程");
-
-        // 处理读取的数据
-        if (kc) {
-            if (itime != 1) outputFile << L",\n    ";
-            outputFile << L"\"a0" << itime << L"\": \"" << time << L"\"";
-        } else {
-            if (itime != 1) outputFile << L",\n    ";
-            outputFile << L"\"f" << itime << L"\": \"" << time << L"\"";
-        }
+        ++itime;  // 行号递增
     }
 
-    outputFile << L"\n        }\n    }\n}";
+    // 结束 timeline 和 schedule 部分
+    timelineJson += L"\n        }\n    },\n";
+    scheduleJson += L"\n    }\n}";
+
+    // 合并 timeline 和 schedule 部分
+    wstring finalJson = timelineJson + scheduleJson;
+
+    // 写入输出文件
+    outputFile << finalJson;
 
     // 关闭文件
     inputFile.close();
     outputFile.close();
-}
-
-HFONT CreateSmoothFont(int height = 20, int weight = FW_NORMAL, const wchar_t* faceName = L"Segoe UI") {
-    LOGFONTW lf = {0};  // 使用 LOGFONTW 而不是 LOGFONT
-    lf.lfHeight = height;
-    lf.lfWeight = weight;
-    lf.lfQuality = CLEARTYPE_QUALITY;
-    wcscpy_s(lf.lfFaceName, LF_FACESIZE, faceName);  // 使用 wcscpy_s
-
-    HFONT hFont = CreateFontIndirectW(&lf);
-
-    if (hFont == NULL) {
-        return NULL;
-    }
-
-    return hFont;
+    MessageBoxW(hWnd, L"任务已完成", L"完成", MB_OK | MB_ICONINFORMATION);
+    return;
 }
 
 void CreateButton(HWND hWnd, HINSTANCE hInst, HFONT hFont, const wchar_t* text, int x, int y, int width, int height, int id);
@@ -197,6 +195,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     return (int)msg.wParam;
 }
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
     static HWND hEdit;
     static HINSTANCE hInst;
