@@ -11,15 +11,8 @@
 - [x] 时间线转化
 - [x] 课程表转化
 - [x] 时间分区
-
-## 需要注意
-出现文件中文格式问题，写入时间段名字时请不要使用中文，否则转换出来的文件若用utf-8格式打开是乱码，只能使用**Simplified Chinese (GBK)** gbk格式，但 [Class Widgets](https://github.com/Class-Widgets/Class-Widgets) 识别utf-8格式。
-> [Class Widgets](https://github.com/Class-Widgets/Class-Widgets) 提示：
-> | ERROR    | list:import_schedule:227 - 加载数据时出错: 'utf-8' codec can't decode byte 0xc9 in position 1307: invalid continuation byte
-
-解决方法：
-写入时间段名字时请不要使用中文，使用英文即可，例如AM，PM
-
+- [x] 支持中文
+- [ ] 单双周课表
 
 ## 环境
 ||测试环境|建议|最低限度|
