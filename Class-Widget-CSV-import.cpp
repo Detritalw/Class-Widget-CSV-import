@@ -74,15 +74,17 @@ void NumCsv2Json(HWND hWnd, HWND hEdit) {
     // 构建输出文件路径
     wstring outputFilePath = filePath.substr(0, filePath.find_last_of(L"\\/") + 1) + L"课表.json";
 
-    // 打开输入文件
+    // 打开输入文件，使用 UTF-8 编码
     wifstream inputFile(filePath.c_str());
+    inputFile.imbue(locale(locale(), new codecvt_utf8<wchar_t>));
     if (!inputFile.is_open()) {
         MessageBoxW(hWnd, L"无法打开输入文件", L"请检查文件路径", MB_OK | MB_ICONERROR);
         return;
     }
 
-    // 创建输出文件
+    // 创建输出文件，使用 UTF-8 编码
     wofstream outputFile(outputFilePath.c_str());
+    outputFile.imbue(locale(locale(), new codecvt_utf8<wchar_t>));
     if (!outputFile.is_open()) {
         MessageBoxW(hWnd, L"无法创建输出文件", L"请检查文件路径", MB_OK | MB_ICONERROR);
         return;
