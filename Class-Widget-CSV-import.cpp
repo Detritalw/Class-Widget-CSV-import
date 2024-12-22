@@ -48,7 +48,136 @@ HFONT CreateSmoothFont(int height = 20, int weight = FW_NORMAL, const wchar_t* f
 
     return hFont;
 }
+void Json2NumCsv(HWND hWnd, HWND hEdit){
+    // 获取编辑控件中的文本作为文件路径
+    wstring filePath = GetEditText(hEdit);
 
+    // 检查文件路径是否为空
+    if (filePath.empty()) {
+        MessageBoxW(hWnd, L"文本框为空", L"请输入文件路径", MB_OK | MB_ICONWARNING);
+        return;
+    }
+
+    // 检查文件是否存在
+    if (!PathFileExistsW(filePath.c_str())) {
+        MessageBoxW(hWnd, L"文件不存在", L"请检查文件路径", MB_OK | MB_ICONSTOP);
+        return;
+    }
+
+    // 检查文件是否为JSON格式
+    if (_wcsicmp(PathFindExtensionW(filePath.c_str()), L".json") != 0) {
+        MessageBoxW(hWnd, L"文件不是.json格式", L"请选择.json文件", MB_OK | MB_ICONSTOP);
+        return;
+    }
+
+    // 构建输出文件路径
+    wstring outputFilePath = filePath.substr(0, filePath.find_last_of(L"\\/") + 1) + L"a.csv";
+
+    // 打开输入文件，使用 UTF-8 编码
+    wifstream inputFile(filePath.c_str());
+    inputFile.imbue(locale(locale(), new codecvt_utf8<wchar_t>));
+    if (!inputFile.is_open()) {
+        MessageBoxW(hWnd, L"无法打开输入文件", L"请检查文件路径", MB_OK | MB_ICONERROR);
+        return;
+    }
+
+    // 创建输出文件，使用 UTF-8 编码
+    wofstream outputFile(outputFilePath.c_str());
+    outputFile.imbue(locale(locale(), new codecvt_utf8<wchar_t>));
+    if (!outputFile.is_open()) {
+        MessageBoxW(hWnd, L"无法创建输出文件", L"请检查文件路径", MB_OK | MB_ICONERROR);
+        return;
+    }
+
+    // 读取 JSON 文件内容
+    wstring jsonContent((istreambuf_iterator<wchar_t>(inputFile)), istreambuf_iterator<wchar_t>());
+    inputFile.close();
+
+    // 解析 JSON 内容
+    size_t partStart = jsonContent.find(L"\"part\": {");
+    size_t partEnd = jsonContent.find(L"}", partStart) + 1;
+    wstring partJson = jsonContent.substr(partStart, partEnd - partStart);
+
+    size_t partNameStart = jsonContent.find(L"\"part_name\": {");
+    size_t partNameEnd = jsonContent.find(L"}", partNameStart) + 1;
+    wstring partNameJson = jsonContent.substr(partNameStart, partNameEnd - partNameStart);
+
+    // 获取 part 中的项目数量
+    size_t partCount = count(partJson.begin(), partJson.end(), L'[');
+
+    // 输出 n+一个逗号，然后换行
+    outputFile << partCount << L",\n";
+
+    // 逐行输出 part_name 和 part 中的值
+    size_t pos = 0;
+    for (size_t i = 0; i < partCount; ++i) {
+        // 获取 part_name 中的值
+        size_t nameStart = partNameJson.find(L"\"", pos) + 1;
+        size_t nameEnd = partNameJson.find(L"\"", nameStart);
+        wstring partName = partNameJson.substr(nameStart, nameEnd - nameStart);
+
+        // 获取 part 中的值
+        size_t partStart = partJson.find(L"[", pos) + 1;
+        size_t partEnd = partJson.find(L"]", partStart);
+        wstring partValues = partJson.substr(partStart, partEnd - partStart);
+
+        // 输出 part_name 和 part 中的值
+        outputFile << partName << L"," << partValues << L"\n";
+
+        pos = partEnd + 1;
+    }
+
+    // 解析 timeline 和 schedule
+    size_t timelineStart = jsonContent.find(L"\"timeline\": {");
+    size_t timelineEnd = jsonContent.find(L"}", timelineStart) + 1;
+    wstring timelineJson = jsonContent.substr(timelineStart, timelineEnd - timelineStart);
+
+    size_t scheduleStart = jsonContent.find(L"\"schedule\": {");
+    size_t scheduleEnd = jsonContent.find(L"}", scheduleStart) + 1;
+    wstring scheduleJson = jsonContent.substr(scheduleStart, scheduleEnd - scheduleStart);
+
+    // 写入 CSV 文件
+    outputFile << L"\n时间戳,课程名称\n";
+    pos = 0;
+    while ((pos = timelineJson.find(L"\"")) != wstring::npos) {
+        size_t keyStart = pos + 1;
+        size_t keyEnd = timelineJson.find(L"\"", keyStart);
+        wstring key = timelineJson.substr(keyStart, keyEnd - keyStart);
+
+        size_t valueStart = timelineJson.find(L"\"", keyEnd + 1) + 1;
+        size_t valueEnd = timelineJson.find(L"\"", valueStart);
+        wstring value = timelineJson.substr(valueStart, valueEnd - valueStart);
+
+        size_t scheduleIndex;
+        try {
+            scheduleIndex = stoi(key.substr(1, 2)) - 1; // 修复索引解析错误
+        } catch (const invalid_argument& e) {
+            MessageBoxW(hWnd, L"无效的索引值", L"错误", MB_OK | MB_ICONERROR);
+            return;
+        } catch (const out_of_range& e) {
+            MessageBoxW(hWnd, L"索引值超出范围", L"错误", MB_OK | MB_ICONERROR);
+            return;
+        }
+
+        size_t schedulePos = scheduleJson.find(L"\"" + to_wstring(scheduleIndex) + L"\": [");
+        if (schedulePos == wstring::npos) {
+            MessageBoxW(hWnd, L"未找到对应的课程安排", L"错误", MB_OK | MB_ICONERROR);
+            return;
+        }
+        size_t scheduleEndPos = scheduleJson.find(L"]", schedulePos);
+        wstring schedule = scheduleJson.substr(schedulePos + to_wstring(scheduleIndex).length() + 4, scheduleEndPos - schedulePos - to_wstring(scheduleIndex).length() - 4);
+
+        outputFile << value << L"," << schedule << L"\n";
+
+        pos = valueEnd + 1;
+    }
+
+    // 关闭文件
+    outputFile.close();
+
+    // 提示任务完成
+    MessageBoxW(hWnd, L"任务已完成", L"完成", MB_OK | MB_ICONINFORMATION);
+}
 void NumCsv2Json(HWND hWnd, HWND hEdit) {
     // 获取编辑控件中的文本作为文件路径
     wstring filePath = GetEditText(hEdit);
@@ -296,7 +425,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
             CreateButton(hWnd, hInst, hFont, L"选择文件", 410, 10, 100, 25, 1);
             CreateButton(hWnd, hInst, hFont, L"确认并从.csv文件(第一列为单个时间段的时间长度)转换到.json课表文件", 10, 40, 500, 25, 2);
-            CreateButton(hWnd, hInst, hFont, L"确认并从.csv文件(第一列为单个时间段的起始时间)转换到.json课表文件", 10, 70, 500, 25, 3);
             CreateButton(hWnd, hInst, hFont, L"确认并从.json课表文件转换到.csv文件", 10, 100, 500, 25, 4);
             CreateButton(hWnd, hInst, hFont, L"需要帮助？", 100, 130, 100, 25, 5);
             CreateButton(hWnd, hInst, hFont, L"退出程序", 200, 130, 100, 25, 6);
@@ -305,13 +433,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
         case WM_COMMAND: {
             if (LOWORD(wParam) == 1) {
                 OPENFILENAMEW ofn;       // 使用宽字符版本的结构体
-                wchar_t szFile[260];    // 缓冲区用于存储文件名
+                wchar_t szFile[260] = {0};    // 缓冲区用于存储文件名
                 ZeroMemory(&ofn, sizeof(ofn));
                 ofn.lStructSize = sizeof(ofn);
                 ofn.hwndOwner = hWnd;
                 ofn.lpstrFile = szFile; // 正确赋值
                 ofn.nMaxFile = sizeof(szFile) / sizeof(wchar_t);
-                ofn.lpstrFilter = L"CSV Files (*.csv)\0*.csv\0All Files (*.*)\0*.*\0";
+                ofn.lpstrFilter = L"csv 表格 (*.csv)\0*.csv\0Class Widgets 课表 (*.json)\0*.json\0All Files (*.*)\0*.*\0";
                 ofn.nFilterIndex = 1;
                 ofn.lpstrFileTitle = NULL;
                 ofn.nMaxFileTitle = 0;
@@ -330,7 +458,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
                 NumCsv2Json(hWnd, hEdit);
             }
             if (LOWORD(wParam) == 4) {
-                NumCsv2Json(hWnd, hEdit);
+                Json2NumCsv(hWnd, hEdit);
             }
             if (LOWORD(wParam) == 5) MessageBoxW(hWnd, L"其实我也不知道帮助是什么", L"谢谢", MB_OK | MB_ICONINFORMATION);
             if (LOWORD(wParam) == 6) exit(0);
