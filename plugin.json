@@ -1,0 +1,13 @@
+{
+    "name": "Class Widgets Csv Import",
+    "description": "让我们用.csv表格编辑 Class Widgets 课表！将.csv文件转换为 Class Widgets Json 课表",
+    "version": "1.0.0",
+    "plugin_ver": 1,
+    "author": "Detrital",
+    "settings": true,
+
+    "url": "https://github.com/Detritalw/Class-Widget-CSV-import",
+    "branch": "main",
+
+    "update_date": "2024/12/28"
+}
