@@ -60,8 +60,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>640</width>
-        <height>509</height>
+        <width>623</width>
+        <height>576</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -140,26 +140,9 @@
              </layout>
             </item>
             <item>
-             <widget class="QPushButton" name="openButton">
+             <widget class="PushButton" name="pushButton">
               <property name="text">
-               <string>单击此处以打开</string>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">font-weight: bold; color: white; font-smooth: always;</string>
-              </property>
-              <property name="lightColor" stdset="0">
-               <color alpha="150">
-                <red>0</red>
-                <green>0</green>
-                <blue>0</blue>
-               </color>
-              </property>
-              <property name="darkColor" stdset="0">
-               <color alpha="200">
-                <red>255</red>
-                <green>255</green>
-                <blue>255</blue>
-               </color>
+               <string>打开转换器</string>
               </property>
              </widget>
             </item>
@@ -195,50 +178,6 @@
              <number>16</number>
             </property>
             <item>
-             <layout class="QVBoxLayout" name="verticalLayout_10">
-              <property name="spacing">
-               <number>0</number>
-              </property>
-              <item>
-               <widget class="StrongBodyLabel" name="StrongBodyLabel_6">
-                <property name="text">
-                 <string>选择 CSV文件 或 Class Widgets json课表</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="CaptionLabel" name="CaptionLabel_3">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>你想要转换的源文件...</string>
-                </property>
-                <property name="wordWrap">
-                 <bool>true</bool>
-                </property>
-                <property name="lightColor" stdset="0">
-                 <color alpha="150">
-                  <red>0</red>
-                  <green>0</green>
-                  <blue>0</blue>
-                 </color>
-                </property>
-                <property name="darkColor" stdset="0">
-                 <color alpha="200">
-                  <red>255</red>
-                  <green>255</green>
-                  <blue>255</blue>
-                 </color>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
              <layout class="QVBoxLayout" name="verticalLayout_11">
               <item>
                <widget class="LineEdit" name="nameEdit_2">
@@ -248,31 +187,215 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
-                <property name="placeholderText">
-                 <string>自动化名称</string>
+                <property name="minimumSize">
+                 <size>
+                  <width>350</width>
+                  <height>32</height>
+                 </size>
                 </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="selectFileButton_2">
                 <property name="text">
-                 <string>选择文件</string>
+                 <string/>
                 </property>
-                <property name="styleSheet">
-                 <string notr="true">QPushButton { padding: 5px; border: 1px solid #ccc; border-radius: 4px; }</string>
+                <property name="placeholderText">
+                 <string> CSV文件 或 Class Widgets json 课表路径</string>
                 </property>
                </widget>
               </item>
              </layout>
             </item>
+            <item>
+             <widget class="PushButton" name="pushButton_2">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>150</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>选择文件</string>
+              </property>
+             </widget>
+            </item>
            </layout>
           </widget>
          </item>
          <item>
-          <widget class="SubtitleLabel" name="SubtitleLabel_2">
-           <property name="text">
-            <string>自动化</string>
+          <widget class="CardWidget" name="frame">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>70</height>
+            </size>
            </property>
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <widget class="PushButton" name="pushButton_4">
+            <property name="geometry">
+             <rect>
+              <x>170</x>
+              <y>10</y>
+              <width>300</width>
+              <height>40</height>
+             </rect>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>300</width>
+              <height>40</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>40</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>将 .csv 表格转换为 Class Widgets .json课表</string>
+            </property>
+           </widget>
+           <widget class="PushButton" name="pushButton_5">
+            <property name="geometry">
+             <rect>
+              <x>490</x>
+              <y>10</y>
+              <width>300</width>
+              <height>40</height>
+             </rect>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>300</width>
+              <height>40</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>40</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>将 Class Widgets .json课表 转换为 .csv 表格</string>
+            </property>
+           </widget>
+           <widget class="StrongBodyLabel" name="StrongBodyLabel_8">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>10</y>
+              <width>100</width>
+              <height>36</height>
+             </rect>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>100</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>选择文件后
+单击按钮转换</string>
+            </property>
+           </widget>
+          </widget>
+         </item>
+         <item>
+          <widget class="CardWidget" name="frame_3">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>70</height>
+            </size>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <widget class="LineEdit" name="nameEdit_3">
+            <property name="geometry">
+             <rect>
+              <x>20</x>
+              <y>20</y>
+              <width>630</width>
+              <height>32</height>
+             </rect>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>630</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>630</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="placeholderText">
+             <string>Class Widgets 课表文件夹</string>
+            </property>
+           </widget>
+           <widget class="PushButton" name="pushButton_7">
+            <property name="geometry">
+             <rect>
+              <x>655</x>
+              <y>20</y>
+              <width>150</width>
+              <height>32</height>
+             </rect>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>150</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>150</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>选择文件夹</string>
+            </property>
+           </widget>
           </widget>
          </item>
          <item>
@@ -303,39 +426,14 @@
               </property>
               <item>
                <widget class="StrongBodyLabel" name="StrongBodyLabel_7">
-                <property name="text">
-                 <string>下课时自动化操作</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="CaptionLabel" name="CaptionLabel_4">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
+                <property name="minimumSize">
+                 <size>
+                  <width>500</width>
+                  <height>0</height>
+                 </size>
                 </property>
                 <property name="text">
-                 <string>（可在“设置”-&gt;“提醒”中点击铃声预览）
-下课提醒后执行的自动化操作</string>
-                </property>
-                <property name="wordWrap">
-                 <bool>true</bool>
-                </property>
-                <property name="lightColor" stdset="0">
-                 <color alpha="150">
-                  <red>0</red>
-                  <green>0</green>
-                  <blue>0</blue>
-                 </color>
-                </property>
-                <property name="darkColor" stdset="0">
-                 <color alpha="200">
-                  <red>255</red>
-                  <green>255</green>
-                  <blue>255</blue>
-                 </color>
+                 <string>帮助</string>
                 </property>
                </widget>
               </item>
@@ -344,31 +442,9 @@
             <item>
              <layout class="QVBoxLayout" name="verticalLayout_13">
               <item>
-               <widget class="LineEdit" name="nameEdit_3">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="placeholderText">
-                 <string>自动化名称</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="LineEdit" name="actionEdit_3">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
+               <widget class="PushButton" name="pushButton_3">
                 <property name="text">
-                 <string/>
-                </property>
-                <property name="placeholderText">
-                 <string>执行动作</string>
+                 <string>打开帮助</string>
                 </property>
                </widget>
               </item>
@@ -378,35 +454,142 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="helpButton">
+          <widget class="StrongBodyLabel" name="StrongBodyLabel_10">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>100</width>
+             <height>16777215</height>
+            </size>
+           </property>
            <property name="text">
-            <string>需要帮助</string>
+            <string>关于</string>
            </property>
-           <property name="styleSheet">
-            <string notr="true">QPushButton { padding: 5px; border: 1px solid #ccc; border-radius: 4px; }</string>
+          </widget>
+         </item>
+         <item>
+          <widget class="CardWidget" name="frame_2">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>70</height>
+            </size>
            </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>70</height>
+            </size>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <widget class="StrongBodyLabel" name="StrongBodyLabel_9">
+            <property name="geometry">
+             <rect>
+              <x>20</x>
+              <y>0</y>
+              <width>200</width>
+              <height>36</height>
+             </rect>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>200</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>200</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Class Widgets CSV import</string>
+            </property>
+           </widget>
+           <widget class="CaptionLabel" name="CaptionLabel_3">
+            <property name="geometry">
+             <rect>
+              <x>20</x>
+              <y>30</y>
+              <width>141</width>
+              <height>18</height>
+             </rect>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Detrital</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+            <property name="lightColor" stdset="0">
+             <color alpha="150">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </property>
+            <property name="darkColor" stdset="0">
+             <color alpha="200">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </property>
+           </widget>
+           <widget class="PushButton" name="pushButton_6">
+            <property name="geometry">
+             <rect>
+              <x>690</x>
+              <y>15</y>
+              <width>100</width>
+              <height>40</height>
+             </rect>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>40</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>150</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Github</string>
+            </property>
+           </widget>
           </widget>
          </item>
         </layout>
        </item>
        <item>
-        <widget class="QFrame" name="blank">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>25</height>
-          </size>
-         </property>
-         <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
-         </property>
-         <property name="lineWidth">
-          <number>5</number>
-         </property>
-        </widget>
+        <widget class="QOpenGLWidget" name="openGLWidget"/>
        </item>
        <item>
         <spacer name="verticalSpacer">
@@ -465,15 +648,12 @@
    <extends>QLineEdit</extends>
    <header>qfluentwidgets</header>
   </customwidget>
+  <customwidget>
+   <class>PushButton</class>
+   <extends>QPushButton</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
  </customwidgets>
  <resources/>
- <connections>
-  <!-- 删除 selectFileButton 的连接 -->
-  <!-- <connection>
-    <sender>selectFileButton</sender>
-    <signal>clicked()</signal>
-    <receiver>Form</receiver>
-    <slot>on_selectFileButton_clicked()</slot>
-  </connection> -->
-</connections>
+ <connections/>
 </ui>
