@@ -1,5 +1,12 @@
-# [Class Widgets](https://github.com/Class-Widgets/Class-Widgets) CSV import
-让我们用.csv表格编辑 [Class Widgets](https://github.com/Class-Widgets/Class-Widgets) 课表！将.csv文件转换为 Class Widgets Json 课表
+<p align="center">
+  <img width="16%" align="center" src="icon.png" alt="logo">
+</p>
+  <h1 align="center">
+  Class Widgets CSV import
+</h1>
+<p align="center">
+ 让我们用.csv表格编辑 Class Widgets 课表！将.csv文件转换为 Class Widgets Json 课表
+</p>
 
 > [!TIP]
 > 本软件已加入插件广场，可前往 Class Widgets 插件广场 下载
